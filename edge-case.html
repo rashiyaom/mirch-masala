@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edge Case Lab | Mirch Masala</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="edge-case.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="top-link" href="index.html">← Back to Main Site</a>
+    <h1>Edge Case Lab</h1>
+    <button id="resetLabBtn" class="btn btn-ghost" type="button">Reset Lab</button>
+  </header>
+
+  <main class="layout">
+    <section class="panel panel-left">
+      <h2>Investigate Uncertain Claims</h2>
+      <p class="lead">Tune real-world uncertainty signals and watch the verdict evolve live. This lab is built for stories where evidence is incomplete or conflicting.</p>
+
+      <label class="field">
+        <span>Claim URL or Headline</span>
+        <input id="claimInput" type="text" placeholder="Example: Local bridge collapse in Mumbai" />
+      </label>
+
+      <div class="controls-grid">
+        <label class="field">
+          <span>Independent Sources</span>
+          <input id="sourcesRange" type="range" min="0" max="20" value="3" />
+          <strong id="sourcesValue">3</strong>
+        </label>
+
+        <label class="field">
+          <span>Eyewitness Reliability</span>
+          <input id="witnessRange" type="range" min="0" max="100" value="52" />
+          <strong id="witnessValue">52%</strong>
+        </label>
+
+        <label class="field">
+          <span>Media Corroboration</span>
+          <input id="mediaRange" type="range" min="0" max="100" value="38" />
+          <strong id="mediaValue">38%</strong>
+        </label>
+
+        <label class="field">
+          <span>Image/Video Evidence</span>
+          <input id="forensicsRange" type="range" min="0" max="100" value="44" />
+          <strong id="forensicsValue">44%</strong>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <button id="aiModeBtn" class="btn btn-primary active" type="button">AI Cautious Mode</button>
+        <button id="hybridModeBtn" class="btn btn-secondary" type="button">Hybrid Community Mode</button>
+      </div>
+
+      <div class="actions-row">
+        <button id="simulateBtn" class="btn btn-primary" type="button">Run Simulation</button>
+        <button id="addEvidenceBtn" class="btn btn-secondary" type="button">Add New Evidence</button>
+      </div>
+    </section>
+
+    <section class="panel panel-right">
+      <h2>Live Verdict Engine</h2>
+      <div class="verdict-wrap">
+        <div class="meter">
+          <div id="meterFill" class="meter-fill"></div>
+        </div>
+        <div class="verdict-stats">
+          <div><span>Confidence</span><strong id="confidenceText">56%</strong></div>
+          <div><span>State</span><strong id="stateText">Uncertain</strong></div>
+          <div><span>Recommendation</span><strong id="recommendationText">Wait for stronger corroboration</strong></div>
+        </div>
+      </div>
+
+      <h3>Evidence Board</h3>
+      <div id="evidenceBoard" class="evidence-board"></div>
+
+      <h3>Timeline</h3>
+      <ul id="timeline" class="timeline"></ul>
+
+      <div class="actions-row">
+        <button id="copySummaryBtn" class="btn btn-secondary" type="button">Copy Summary</button>
+        <button id="publishReportBtn" class="btn btn-primary" type="button">Open Full Report</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modalTitle">Report</h3>
+        <button id="closeModalBtn" class="btn btn-ghost" type="button">Close</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="edge-case.js"></script>
+</body>
+</html>

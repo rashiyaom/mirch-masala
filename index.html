@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirch Masala — Spice Up the Truth 🌶️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-logo">🌶️</div>
+      <div class="loader-text">Analyzing truth<span class="dots">...</span></div>
+      <div class="loader-bar-wrap">
+        <div class="loader-bar"></div>
+      </div>
+      <div class="loader-sub">Calibrating spice levels</div>
+    </div>
+  </div>
+
+  <!-- CURSOR GLOW -->
+  <div id="cursor-glow"></div>
+  <div id="cursor-dot"></div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <div class="nav-logo">
+        <span class="logo-icon">🌶️</span>
+        <span class="logo-text">Mirch<span class="logo-accent">Masala</span></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#edge-case">Edge Cases</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#hero" class="nav-cta">Try Now</a></li>
+      </ul>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#edge-case">Edge Cases</a></li>
+      <li><a href="#features">Features</a></li>
+    </ul>
+  </div>
+
+  <!-- ===================== HERO SECTION ===================== -->
+  <section id="hero">
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        AI-Powered Truth Engine · Live
+      </div>
+
+      <h1 class="hero-title">
+        <span class="hero-line" data-text="Spice Up">Spice Up</span>
+        <span class="hero-line accent-line" data-text="The Truth">The Truth</span>
+        <span class="hero-chili">🌶️</span>
+      </h1>
+
+      <p class="hero-sub">AI-powered fake news detection in seconds.<br/>No fluff. Pure heat. Absolute clarity.</p>
+
+      <div class="hero-input-wrap">
+        <div class="input-container">
+          <span class="input-icon">🔗</span>
+          <input
+            type="text"
+            id="newsInput"
+            placeholder="Paste a news link or social post URL…"
+            autocomplete="off"
+          />
+          <button class="detect-btn" id="detectBtn">
+            <span class="btn-text">Detect Now</span>
+            <span class="btn-icon">🌶️</span>
+            <div class="btn-ripple"></div>
+          </button>
+        </div>
+        <p class="input-hint">Supports Twitter, Instagram, news sites, WhatsApp forwards</p>
+        <p class="input-hint" id="analysisPulse">Ready to scan your next headline.</p>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num" data-count="2.4">0</span><span>M+</span>
+          <span class="stat-label">Articles Analyzed</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-count="97">0</span><span>%</span>
+          <span class="stat-label">Accuracy Rate</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-count="0.8">0</span><span>s</span>
+          <span class="stat-label">Avg. Response</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Scroll to explore</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section id="how-it-works">
+    <div class="section-container">
+      <div class="section-label">The Process</div>
+      <h2 class="section-title">How the <span class="glow-text">Magic</span> Works</h2>
+      <p class="section-sub">Three steps. Zero tolerance for misinformation.</p>
+
+      <div class="steps-grid">
+        <div class="step-card" data-step="1">
+          <div class="step-number">01</div>
+          <div class="step-icon-wrap">
+            <div class="step-icon">🔗</div>
+            <div class="step-ring"></div>
+          </div>
+          <h3>Paste the Link</h3>
+          <p>Drop any URL — news article, tweet, Instagram post, or a WhatsApp forward. We'll handle the rest.</p>
+          <div class="step-glow"></div>
+        </div>
+
+        <div class="step-connector">
+          <div class="connector-line"></div>
+          <div class="connector-dot"></div>
+        </div>
+
+        <div class="step-card" data-step="2">
+          <div class="step-number">02</div>
+          <div class="step-icon-wrap">
+            <div class="step-icon">🧠</div>
+            <div class="step-ring"></div>
+          </div>
+          <h3>AI Analyzes Source</h3>
+          <p>Our multi-layered AI cross-references 140+ credibility signals, source history, and linguistic patterns.</p>
+          <div class="step-glow"></div>
+        </div>
+
+        <div class="step-connector">
+          <div class="connector-line"></div>
+          <div class="connector-dot"></div>
+        </div>
+
+        <div class="step-card" data-step="3">
+          <div class="step-number">03</div>
+          <div class="step-icon-wrap">
+            <div class="step-icon">🌶️</div>
+            <div class="step-ring"></div>
+          </div>
+          <h3>Truth Score Generated</h3>
+          <p>Receive a detailed report with credibility score, source analysis, and actionable insights instantly.</p>
+          <div class="step-glow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DEMO RESULT SECTION ===================== -->
+  <section id="demo">
+    <div class="section-container">
+      <div class="section-label">Sample Analysis</div>
+      <h2 class="section-title">See It In <span class="glow-text">Action</span></h2>
+      <p class="section-sub">Here's what a real analysis looks like.</p>
+
+      <div class="demo-layout">
+        <div class="demo-url-card">
+          <div class="demo-url-label">Analyzed URL</div>
+          <div class="demo-url-text">
+            <span class="url-protocol" id="demoProtocol">https://</span>
+            <span class="url-domain" id="demoDomain">viral-breaking-news.xyz</span>
+            <span class="url-path" id="demoPath">/india/shocking-revelation-2024</span>
+          </div>
+          <div class="demo-meta">
+            <span class="meta-tag warning" id="metaPrimary">🔴 Suspicious Domain</span>
+            <span class="meta-tag" id="metaSecondary">📅 Published 2h ago</span>
+            <span class="meta-tag" id="metaTertiary">👁 14.2K shares</span>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-badge">
+              <span class="result-badge-text" id="resultBadgeText">Analysis Complete</span>
+              <span class="result-badge-dot"></span>
+            </div>
+            <div class="result-time" id="resultTime">Processed in 0.7s</div>
+          </div>
+
+          <div class="scan-story" id="scanStory">Paste a link, and we will hunt for corroboration across live sources.</div>
+
+          <div class="truth-score-section">
+            <div class="truth-ring-wrap">
+              <svg class="truth-ring" viewBox="0 0 120 120">
+                <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                <circle class="ring-fill" cx="60" cy="60" r="50" id="scoreRing"/>
+              </svg>
+              <div class="truth-score-inner">
+                <span class="truth-number" id="truthNumber">0</span>
+                <span class="truth-percent">%</span>
+                <span class="truth-label">Real</span>
+              </div>
+            </div>
+
+            <div class="truth-details">
+              <div class="verdict-badge partial">⚠️ Partially Verified</div>
+
+              <div class="detail-bars">
+                <div class="detail-bar-item">
+                  <div class="bar-label">
+                    <span>Source Credibility</span>
+                    <span class="bar-value">34%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill danger" data-width="34"></div>
+                  </div>
+                </div>
+
+                <div class="detail-bar-item">
+                  <div class="bar-label">
+                    <span>Fact Corroboration</span>
+                    <span class="bar-value">71%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill moderate" data-width="71"></div>
+                  </div>
+                </div>
+
+                <div class="detail-bar-item">
+                  <div class="bar-label">
+                    <span>Linguistic Integrity</span>
+                    <span class="bar-value">88%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill good" data-width="88"></div>
+                  </div>
+                </div>
+
+                <div class="detail-bar-item">
+                  <div class="bar-label">
+                    <span>Social Amplification Risk</span>
+                    <span class="bar-value">82%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill danger" data-width="82"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-tags">
+            <span class="rtag red">🚨 Low Source Confidence</span>
+            <span class="rtag yellow">⚠️ Partially Verified</span>
+            <span class="rtag blue">🔍 Needs Fact Check</span>
+            <span class="rtag orange">🔥 High Virality Risk</span>
+          </div>
+
+          <div class="evidence-list" id="evidenceList"></div>
+
+          <div class="result-footer">
+            <button class="action-btn secondary" id="fullReportBtn" aria-label="Open full verification report">Full Report</button>
+            <button class="action-btn primary" id="shareWarningBtn" aria-label="Share warning summary">Share Warning</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== EDGE CASE SECTION ===================== -->
+  <section id="edge-case">
+    <div class="section-container">
+      <div class="section-label">The Gray Zone</div>
+      <h2 class="section-title">When Truth Has <span class="glow-text">No Witness</span></h2>
+      <p class="section-sub">Not everything is black or white. Some stories exist in the fog of uncertainty.</p>
+
+      <div class="edge-layout">
+        <div class="edge-description">
+          <p class="edge-intro">Sometimes a story breaks before any authoritative source can verify it. Ground reports, local incidents, insider leaks — they exist in a zone where our AI can't give you a verdict with confidence.</p>
+          <p class="edge-intro">We don't fake certainty. We tell you when we're unsure — and give you the tools to decide.</p>
+
+          <div class="toggle-section">
+            <div class="toggle-label">Analysis Mode</div>
+            <div class="mode-toggle-wrap">
+              <button class="mode-btn active" id="modeAI" data-mode="ai">
+                <span class="mode-icon">🤖</span>
+                AI Unsure Mode
+              </button>
+              <button class="mode-btn" id="modeUser" data-mode="user">
+                <span class="mode-icon">👥</span>
+                User Context Mode
+              </button>
+            </div>
+            <a class="detect-btn edge-lab-btn" href="edge-case.html" aria-label="Open Edge Case Interactive Lab">
+              <span class="btn-text">Open Edge Case Lab</span>
+              <span class="btn-icon">🧪</span>
+              <div class="btn-ripple"></div>
+            </a>
+          </div>
+        </div>
+
+        <div class="edge-display">
+          <!-- AI Unsure Mode -->
+          <div class="edge-card active" id="cardAI">
+            <div class="edge-card-header">
+              <span class="edge-icon">🤖</span>
+              <div>
+                <div class="edge-card-title">AI Unsure Mode</div>
+                <div class="edge-card-sub">Insufficient data to determine</div>
+              </div>
+              <div class="uncertainty-badge">?</div>
+            </div>
+            <div class="edge-meter-wrap">
+              <div class="edge-meter">
+                <div class="uncertainty-fill"></div>
+                <div class="uncertainty-cursor"></div>
+              </div>
+              <div class="edge-meter-labels">
+                <span>Likely Fake</span>
+                <span>Uncertain</span>
+                <span>Likely Real</span>
+              </div>
+            </div>
+            <div class="edge-signals">
+              <div class="signal-item">
+                <span class="signal-dot orange"></span>
+                <span>Story found on 2 sources only</span>
+              </div>
+              <div class="signal-item">
+                <span class="signal-dot yellow"></span>
+                <span>No established media coverage yet</span>
+              </div>
+              <div class="signal-item">
+                <span class="signal-dot green"></span>
+                <span>Linguistic patterns appear genuine</span>
+              </div>
+              <div class="signal-item">
+                <span class="signal-dot orange"></span>
+                <span>Images reverse-searched — inconclusive</span>
+              </div>
+            </div>
+            <div class="edge-verdict">
+              <span class="verdict-text unsure">⏳ Check back in 2–4 hours as story develops</span>
+            </div>
+          </div>
+
+          <!-- User Context Mode -->
+          <div class="edge-card" id="cardUser">
+            <div class="edge-card-header">
+              <span class="edge-icon">👥</span>
+              <div>
+                <div class="edge-card-title">User Context Mode</div>
+                <div class="edge-card-sub">Community verification active</div>
+              </div>
+              <div class="crowd-badge">👁 847</div>
+            </div>
+            <div class="crowd-votes">
+              <div class="vote-bar-wrap">
+                <div class="vote-label">
+                  <span>✅ Real</span>
+                  <span class="vote-count">612</span>
+                </div>
+                <div class="vote-track">
+                  <div class="vote-fill real-vote" data-width="72"></div>
+                </div>
+                <div class="vote-pct">72%</div>
+              </div>
+              <div class="vote-bar-wrap">
+                <div class="vote-label">
+                  <span>❌ Fake</span>
+                  <span class="vote-count">235</span>
+                </div>
+                <div class="vote-track">
+                  <div class="vote-fill fake-vote" data-width="28"></div>
+                </div>
+                <div class="vote-pct">28%</div>
+              </div>
+            </div>
+            <div class="context-inputs">
+              <div class="context-input-item">
+                <span class="ci-icon">📍</span>
+                <span>3 users submitted local eyewitness info</span>
+              </div>
+              <div class="context-input-item">
+                <span class="ci-icon">🎥</span>
+                <span>2 video submissions under review</span>
+              </div>
+            </div>
+            <div class="edge-verdict">
+              <span class="verdict-text moderate">🔶 Community leans real — awaiting media confirmation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURES SECTION ===================== -->
+  <section id="features">
+    <div class="section-container">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-title">Why <span class="glow-text">Mirch Masala</span> Hits Different</h2>
+      <p class="section-sub">Every tool you need to stop misinformation in its tracks.</p>
+
+      <div class="features-grid">
+        <div class="feature-card" data-index="0">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon">⚡</div>
+          </div>
+          <h3>Real-time Analysis</h3>
+          <p>Sub-second truth scoring powered by our distributed AI pipeline. Results before the share button cools down.</p>
+          <div class="feature-tag">< 1s response</div>
+          <div class="feature-glow"></div>
+        </div>
+
+        <div class="feature-card" data-index="1">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon">📱</div>
+          </div>
+          <h3>Social Media Verification</h3>
+          <p>Works across Twitter/X, Instagram, Facebook, WhatsApp links, Telegram channels, and more.</p>
+          <div class="feature-tag">12+ platforms</div>
+          <div class="feature-glow"></div>
+        </div>
+
+        <div class="feature-card" data-index="2">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon">🧠</div>
+          </div>
+          <h3>AI Context Understanding</h3>
+          <p>Beyond keyword matching — our LLM understands narrative intent, emotional manipulation, and rhetorical tricks.</p>
+          <div class="feature-tag">Multi-layer NLP</div>
+          <div class="feature-glow"></div>
+        </div>
+
+        <div class="feature-card" data-index="3">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon">👁</div>
+          </div>
+          <h3>Image Forensics</h3>
+          <p>Reverse-image search, deepfake detection, and metadata analysis to catch visually-manipulated content.</p>
+          <div class="feature-tag">Beta</div>
+          <div class="feature-glow"></div>
+        </div>
+
+        <div class="feature-card" data-index="4">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon">🌐</div>
+          </div>
+          <h3>Multilingual Support</h3>
+          <p>Detects misinformation in Hindi, English, Tamil, Bengali, and 8 other Indian languages.</p>
+          <div class="feature-tag">11 languages</div>
+          <div class="feature-glow"></div>
+        </div>
+
+        <div class="feature-card crowd-card" data-index="5">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon">🔮</div>
+          </div>
+          <h3>Crowd Insight</h3>
+          <p>Collective intelligence layer — community reports and local expert verification for ground-truth edge cases.</p>
+          <div class="feature-tag coming-soon">Coming Soon</div>
+          <div class="feature-glow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA SECTION ===================== -->
+  <section id="cta-section">
+    <div class="section-container">
+      <div class="cta-box">
+        <div class="cta-spice-bg"></div>
+        <div class="cta-content">
+          <div class="cta-icon">🌶️</div>
+          <h2>Start Detecting. Stop Spreading.</h2>
+          <p>Join 40,000+ Indians who verify before they share.</p>
+          <div class="cta-input-row">
+            <input type="email" id="ctaEmail" placeholder="Enter your email for early access" />
+            <button class="detect-btn cta-detect-btn" id="ctaSubmitBtn" aria-label="Submit email for early access">
+              <span>Get Early Access</span>
+              <span>🚀</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer id="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="nav-logo">
+            <span class="logo-icon">🌶️</span>
+            <span class="logo-text">Mirch<span class="logo-accent">Masala</span></span>
+          </div>
+          <p class="footer-tagline">Adding Spice to Truth Detection</p>
+        </div>
+        <div class="footer-links-group">
+          <div class="footer-col">
+            <div class="footer-col-title">Product</div>
+            <a href="#">How It Works</a>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">API</a>
+          </div>
+          <div class="footer-col">
+            <div class="footer-col-title">Company</div>
+            <a href="#">About</a>
+            <a href="#">Blog</a>
+            <a href="#">Careers</a>
+            <a href="#">Press</a>
+          </div>
+          <div class="footer-col">
+            <div class="footer-col-title">Legal</div>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Cookie Policy</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Mirch Masala. Built with 🌶️ and zero tolerance for lies.</span>
+        <div class="footer-socials">
+          <a href="#" class="social-link">𝕏</a>
+          <a href="#" class="social-link">in</a>
+          <a href="#" class="social-link">▶</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
