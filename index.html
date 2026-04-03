@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRCH MASALA — TRUTH OR TADKA?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #1a130f;
+  --white: #fffaf1;
+  --red: #e8000d;
+  --orange: #ff6b00;
+  --neon: #ffcc00;
+  --paper: #f6f1e6;
+  --ink: #1f1812;
+  --muted: #6e5f52;
+  --line: #d9ccb9;
+  --panel: #fff9ef;
+  --safe: #0e9f5f;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 15%, #fffdf8 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, #f2e6d4 0%, transparent 35%),
+    var(--paper);
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+#cursor {
+  position: fixed; width: 22px; height: 22px;
+  background: var(--red); border: 3px solid var(--ink);
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  transition: background 0.1s;
+}
+#cursor.scanning { background: var(--neon); animation: cursorSpin 0.3s linear infinite; }
+@keyframes cursorSpin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+/* GRAIN */
+#grain {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1000; opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  animation: grainShift 0.35s steps(2) infinite;
+}
+@keyframes grainShift {
+  0%  { transform: translate(0,0); } 25% { transform: translate(-2px,3px); }
+  50% { transform: translate(4px,-1px); } 75% { transform: translate(-3px,2px); }
+  100%{ transform: translate(1px,-4px); }
+}
+
+/* BORDERS */
+.bv { position: fixed; top: 0; width: 3px; height: 100%; background: var(--white); z-index: 10; }
+.bv.l { left: 46px; } .bv.r { right: 46px; }
+.bh { position: fixed; left: 0; height: 3px; width: 100%; background: var(--white); z-index: 10; }
+.bh.t { top: 38px; } .bh.b { bottom: 38px; }
+
+/* CORNERS */
+.corner { position: fixed; width: 14px; height: 14px; z-index: 200; }
+.corner::before,.corner::after { content:''; position:absolute; background: var(--white); }
+.corner::before { width:100%; height:2px; top:0; left:0; }
+.corner::after  { width:2px; height:100%; top:0; left:0; }
+.corner.tl { top:30px; left:38px; }
+.corner.tr { top:30px; right:38px; transform:scaleX(-1); }
+.corner.bl { bottom:30px; left:38px; transform:scaleY(-1); }
+.corner.br { bottom:30px; right:38px; transform:scale(-1); }
+
+/* SIDE LABELS */
+.side-lbl {
+  writing-mode:vertical-rl; position:fixed; z-index:15;
+  font-family:'Space Mono',monospace; font-size:clamp(5px,0.65vw,8px);
+  color:var(--muted); text-transform:uppercase; letter-spacing:0.25em;
+}
+.side-lbl.l { left:8px; top:50%; transform:translateY(-50%); }
+.side-lbl.r { right:8px; top:50%; transform:translateY(-50%) rotate(180deg); }
+
+/* BG WATERMARK */
+#bg-text {
+  position:fixed; bottom:50px; left:-5%;
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(80px,13vw,170px);
+  color:rgba(232,0,13,0.065); white-space:nowrap; letter-spacing:0.05em;
+  pointer-events:none; z-index:5; transform:rotate(-5deg);
+  user-select:none;
+}
+
+/* POSTER GRID */
+#poster {
+  position:fixed; inset:0;
+  display:grid;
+  grid-template-columns: 56px 1fr 1fr 56px;
+  grid-template-rows: 46px auto auto auto auto 46px;
+  overflow:hidden; background:var(--paper);
+}
+
+/* ─── BRAND STRIP ─── */
+#brand-strip {
+  grid-column:2/4; grid-row:1/2;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px; z-index:20; position:relative;
+}
+#brand-name {
+  font-family:'Black Ops One',cursive;
+  font-size:clamp(14px,2.2vw,24px);
+  color:var(--ink); letter-spacing:0.08em;
+  transform:rotate(-1.5deg); display:inline-block;
+  text-shadow:3px 3px 0 var(--red);
+  cursor:none;
+}
+#brand-tag {
+  font-family:'Space Mono',monospace; font-size:clamp(6px,0.8vw,10px);
+  color:#8e5937; text-transform:uppercase; letter-spacing:0.15em;
+}
+#scan-badge {
+  font-family:'Space Mono',monospace; font-size:clamp(6px,0.75vw,9px);
+  color:#6d4f00; border:2px solid #6d4f00; padding:2px 7px; background:#ffe9a7;
+}
+
+/* ─── HEADLINE ─── */
+#hl-zone {
+  grid-column:2/4; grid-row:2/3;
+  padding:6px 16px 2px 16px; position:relative; z-index:20;
+}
+#hl-sub {
+  font-family:'Space Mono',monospace; font-size:clamp(7px,0.9vw,11px);
+  color:var(--orange); letter-spacing:0.28em; text-transform:uppercase; margin-bottom:2px;
+}
+#hl-main {
+  font-family:'Black Ops One',cursive;
+  font-size:clamp(38px,8vw,108px);
+  line-height:0.86; color:var(--ink); text-transform:uppercase;
+  position:relative; display:block; user-select:none;
+  text-shadow:5px 5px 0 var(--red), -2px -2px 0 var(--orange);
+  will-change:transform;
+}
+#hl-main .w1 { color:var(--ink); display:block; }
+#hl-main .w2 { color:var(--neon); display:block; }
+#hl-main .w3 { color:var(--red); display:block; transform:translateX(22px) rotate(0.4deg); }
+
+#intel-board {
+  position:absolute;
+  right:18px;
+  top:16px;
+  width:min(380px,35vw);
+  background:var(--panel);
+  border:3px solid var(--ink);
+  box-shadow:7px 7px 0 var(--ink);
+  padding:10px;
+  transform:rotate(-0.8deg);
+}
+#intel-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:7px;
+}
+#intel-title {
+  font-family:'Black Ops One',cursive;
+  font-size:clamp(11px,1.4vw,19px);
+  color:var(--ink);
+  letter-spacing:0.05em;
+}
+#intel-live {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(6px,0.7vw,9px);
+  color:#7b5f46;
+  border:2px solid #7b5f46;
+  padding:1px 5px;
+}
+#intel-metrics {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:6px;
+  margin-bottom:8px;
+}
+.im {
+  background:#fff3de;
+  border:2px solid #d8c4a5;
+  padding:4px 5px;
+}
+.imn {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(14px,2vw,24px);
+  color:var(--red);
+  line-height:1;
+}
+.iml {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(5px,0.62vw,8px);
+  color:#7a6a5c;
+  letter-spacing:0.09em;
+  text-transform:uppercase;
+}
+#intel-notes {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.inote {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(6px,0.72vw,9px);
+  color:#684f3a;
+  border-left:3px solid var(--orange);
+  background:#fff8ed;
+  padding:3px 6px;
+  line-height:1.45;
+}
+
+#verify-protocol {
+  position:absolute;
+  right:24px;
+  bottom:-10px;
+  width:min(390px,36vw);
+  border:2px dashed #c3a985;
+  background:rgba(255, 248, 236, 0.72);
+  padding:8px;
+}
+#vp-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(10px,1.1vw,15px);
+  color:#8a5425;
+  letter-spacing:0.16em;
+  margin-bottom:5px;
+}
+#vp-steps {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:5px;
+}
+.vps {
+  border:2px solid #d5bf9e;
+  background:#fffdf7;
+  padding:4px;
+}
+.vpsn {
+  font-family:'Black Ops One',cursive;
+  color:var(--red);
+  font-size:clamp(9px,1vw,13px);
+}
+.vpst {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(5px,0.62vw,8px);
+  color:#6f5e50;
+  line-height:1.4;
+}
+
+.gl { position:absolute; top:0; left:0; width:100%; pointer-events:none; opacity:0; user-select:none;
+  font-family:'Black Ops One',cursive; font-size:clamp(38px,8vw,108px); line-height:0.86; }
+.gl.r { color:var(--red); mix-blend-mode:screen; }
+.gl.b { color:#00f0ff; mix-blend-mode:screen; }
+
+/* ─── MIDDLE ROW ─── */
+#mid {
+  grid-column:2/4; grid-row:3/4;
+  display:grid; grid-template-columns:1fr 1fr;
+  padding:6px 16px; gap:0; position:relative; z-index:20;
+}
+
+/* METER */
+#meter-zone { display:flex; flex-direction:column; align-items:flex-start; padding-right:14px; }
+#meter-lbl {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(10px,1.3vw,17px);
+  color:var(--orange); letter-spacing:0.28em; margin-bottom:5px;
+}
+#meter-wrap {
+  position:relative; width:min(150px,15vw); height:min(150px,15vw); margin-bottom:7px;
+}
+#msvg { width:100%; height:100%; transform:rotate(-90deg); }
+#m-bg { fill:none; stroke:#ded2c0; stroke-width:13; }
+#m-fill { fill:none; stroke:var(--red); stroke-width:13; stroke-linecap:butt;
+  stroke-dasharray:339.29; stroke-dashoffset:339.29; transition:stroke 0.15s; }
+#m-pct {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Black Ops One',cursive; font-size:clamp(20px,3.2vw,44px); color:var(--ink);
+}
+#m-verdict {
+  font-family:'Barlow Condensed',sans-serif; font-size:clamp(12px,1.6vw,22px); font-weight:900;
+  color:var(--red); letter-spacing:0.12em; text-transform:uppercase;
+  border:3px solid var(--red); padding:2px 9px; transform:rotate(-1deg);
+  transition:color 0.2s, border-color 0.2s;
+}
+#m-verdict.real { color:var(--safe); border-color:var(--safe); }
+#m-verdict.mixed { color:var(--orange); border-color:var(--orange); }
+
+/* BARS */
+#bars { margin-top:7px; width:100%; display:flex; flex-direction:column; gap:3px; }
+.br { display:flex; align-items:center; gap:5px; }
+.bl { font-family:'Space Mono',monospace; font-size:clamp(5px,0.65vw,8px); color:#666; width:56px; text-transform:uppercase; }
+.bt { flex:1; height:7px; background:#efe5d7; border:1px solid #c9baa3; overflow:hidden; }
+.bf { height:100%; width:0%; background:var(--red); transition:width 0.45s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* INPUT */
+#input-zone {
+  display:flex; flex-direction:column; gap:7px;
+  padding-left:14px; border-left:3px solid var(--line);
+}
+#inp-hdr {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(10px,1.3vw,17px);
+  color:var(--orange); letter-spacing:0.28em;
+}
+#link-inp {
+  width:100%; background:var(--panel); border:3px solid var(--ink);
+  color:var(--ink); font-family:'Space Mono',monospace; font-size:clamp(7px,0.85vw,11px);
+  padding:7px 9px; outline:none; resize:none; cursor:none; height:54px;
+  box-shadow:4px 4px 0 var(--ink); transition:border-color 0.12s, box-shadow 0.12s;
+}
+#link-inp::placeholder { color:#8a7f72; }
+#link-inp:focus { border-color:var(--neon); box-shadow:4px 4px 0 var(--neon); }
+
+#spice-btn {
+  font-family:'Black Ops One',cursive; font-size:clamp(13px,1.9vw,25px);
+  letter-spacing:0.07em; background:var(--red); color:var(--white);
+  border:4px solid var(--ink); padding:9px 15px; cursor:none;
+  text-transform:uppercase; box-shadow:6px 6px 0 var(--ink);
+  transition:transform 0.05s, box-shadow 0.05s; position:relative; overflow:hidden;
+  user-select:none; white-space:nowrap; align-self:flex-start;
+}
+#spice-btn::before {
+  content:''; position:absolute; inset:0; background:var(--neon);
+  transform:scaleX(0); transform-origin:left; transition:transform 0.12s; z-index:0;
+}
+#spice-btn:hover::before { transform:scaleX(1); }
+#spice-btn:hover { color:var(--black); }
+#spice-btn span { position:relative; z-index:1; }
+#spice-btn:active { transform:translate(4px,4px); box-shadow:2px 2px 0 var(--ink); }
+
+#scan-status {
+  font-family:'Space Mono',monospace; font-size:clamp(6px,0.75vw,9px);
+  color:var(--muted); letter-spacing:0.12em; min-height:14px;
+}
+
+#trust-box {
+  border:2px solid var(--line);
+  background:var(--panel);
+  padding:8px;
+  box-shadow:3px 3px 0 #d9ccb9;
+}
+#trust-h {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(9px,1.1vw,14px);
+  letter-spacing:0.16em;
+  color:#80522d;
+  margin-bottom:3px;
+}
+#trust-p {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(6px,0.75vw,9px);
+  color:#6b5c4e;
+  line-height:1.5;
+  margin-bottom:5px;
+}
+#trust-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:4px; }
+.tt {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(7px,0.8vw,10px);
+  font-weight:700;
+  border:1px solid #b79f7d;
+  color:#80522d;
+  padding:1px 4px;
+  text-transform:uppercase;
+}
+#trust-note {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(5px,0.65vw,8px);
+  color:#856f59;
+}
+
+#source-heat {
+  border:2px solid #d8c5aa;
+  background:#fffdf7;
+  padding:7px;
+}
+#sh-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(9px,1.1vw,14px);
+  letter-spacing:0.14em;
+  color:#8a5425;
+  margin-bottom:4px;
+}
+#sh-svg {
+  width:100%;
+  height:56px;
+  display:block;
+}
+.sh-cap {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(5px,0.65vw,8px);
+  color:#786758;
+  margin-top:4px;
+  line-height:1.4;
+}
+
+#mini-gallery {
+  margin-top:8px;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:6px;
+}
+.gcard {
+  border:2px solid #d7c4a8;
+  background:#fffaf0;
+  padding:6px;
+  min-height:90px;
+}
+.gsvg {
+  width:28px;
+  height:28px;
+  display:block;
+  margin-bottom:4px;
+}
+.gttl {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(8px,0.92vw,12px);
+  color:#6c3f1b;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+}
+.gdesc {
+  font-family:'Space Mono',monospace;
+  font-size:clamp(5px,0.62vw,8px);
+  color:#6f5e50;
+  line-height:1.35;
+}
+
+@media (max-width: 980px) {
+  #intel-board,
+  #verify-protocol {
+    position:static;
+    width:100%;
+    transform:none;
+    margin-top:8px;
+  }
+  #vp-steps { grid-template-columns:1fr; }
+  #intel-metrics { grid-template-columns:repeat(3, minmax(0,1fr)); }
+  #mini-gallery { grid-template-columns:1fr; }
+}
+
+/* ─── CHAOS LABELS ─── */
+.chaos {
+  position:fixed; font-family:'Black Ops One',cursive;
+  font-size:clamp(13px,1.8vw,26px); pointer-events:none;
+  z-index:50; user-select:none; letter-spacing:0.04em;
+  border:3px solid currentColor; padding:3px 9px; mix-blend-mode:multiply;
+}
+#lb1 { color:var(--red);    top:29%; left:11%; }
+#lb2 { color:var(--neon);   top:54%; right:9%; }
+#lb3 { color:var(--orange); bottom:19%; left:7%; }
+#lb4 { color:#00f0ff; top:19%; right:6%; font-size:clamp(9px,1.2vw,16px); }
+
+/* ─── DRAG BLOCK ─── */
+#drag-block {
+  position:fixed; bottom:78px; left:58px;
+  width:min(120px,12vw); background:var(--red);
+  border:4px solid var(--ink); box-shadow:5px 5px 0 var(--ink);
+  padding:7px 9px; z-index:100; cursor:none; transform:rotate(-3deg);
+}
+#drag-block p { font-family:'Black Ops One',cursive; font-size:clamp(10px,1.3vw,17px); color:var(--white); text-transform:uppercase; line-height:1; }
+#drag-block small { font-family:'Space Mono',monospace; font-size:clamp(5px,0.65vw,8px); color:rgba(255,255,255,0.55); display:block; margin-top:3px; letter-spacing:0.1em; }
+
+/* ─── BOTTOM ROW ─── */
+#btm {
+  grid-column:2/4; grid-row:4/5;
+  padding:0 16px; display:flex; align-items:center; gap:10px;
+  position:relative; z-index:20;
+}
+#mq-wrap { flex:1; overflow:hidden; border:3px solid #cab89f; background:#fff8ed; height:26px; display:flex; align-items:center; }
+#mq { display:flex; white-space:nowrap; animation:mqScroll 13s linear infinite; }
+.mi { font-family:'Space Mono',monospace; font-size:clamp(6px,0.78vw,9px); color:var(--orange); text-transform:uppercase; letter-spacing:0.18em; padding:0 20px; }
+.ms { color:var(--red); padding:0 3px; }
+@keyframes mqScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+#edge-btn {
+  font-family:'Space Mono',monospace; font-size:clamp(6px,0.78vw,9px);
+  color:var(--ink); background:var(--neon); border:3px solid var(--ink);
+  padding:3px 9px; cursor:none; text-transform:uppercase; letter-spacing:0.1em;
+  box-shadow:3px 3px 0 var(--ink); white-space:nowrap; flex-shrink:0;
+  height:26px; display:flex; align-items:center; user-select:none;
+}
+#edge-btn:hover { background:var(--orange); }
+
+/* EDGE PANEL */
+#epanel {
+  position:fixed; bottom:54px; right:56px; width:min(300px,28vw);
+  background:var(--panel); border:4px solid #ad7f18; box-shadow:8px 8px 0 #ad7f18;
+  padding:14px; z-index:200; transform:scaleY(0); transform-origin:bottom right; opacity:0; pointer-events:none;
+  transition: none;
+}
+#epanel h3 { font-family:'Black Ops One',cursive; font-size:clamp(13px,1.6vw,19px); color:#6e4c00; margin-bottom:7px; line-height:1.1; }
+#epanel p { font-family:'Space Mono',monospace; font-size:clamp(6px,0.78vw,9px); color:#6b5f53; line-height:1.65; margin-bottom:7px; }
+.etags { display:flex; flex-wrap:wrap; gap:4px; }
+.etag { font-family:'Barlow Condensed',sans-serif; font-size:clamp(7px,0.85vw,11px); font-weight:700;
+  padding:2px 5px; border:2px solid var(--orange); color:var(--orange); text-transform:uppercase; }
+#eclose { position:absolute; top:7px; right:9px; font-family:'Black Ops One',cursive; font-size:13px; color:var(--red); cursor:none; background:none; border:none; }
+
+/* ─── STATS ─── */
+#stats {
+  grid-column:2/4; grid-row:5/6;
+  padding:3px 16px; display:flex; gap:14px; align-items:center;
+  z-index:20; position:relative;
+}
+.si { display:flex; flex-direction:column; }
+.sn { font-family:'Bebas Neue',sans-serif; font-size:clamp(16px,2.3vw,32px); color:var(--ink); line-height:1; }
+.sn.red{color:var(--red)} .sn.or{color:var(--orange)}
+.sl { font-family:'Space Mono',monospace; font-size:clamp(4px,0.6vw,7px); color:var(--muted); text-transform:uppercase; letter-spacing:0.12em; }
+.sd { width:2px; height:28px; background:#cdbca4; flex-shrink:0; }
+
+/* ─── SCAN OVERLAY ─── */
+#sov { position:fixed; inset:0; pointer-events:none; z-index:500; opacity:0; }
+#sline { position:absolute; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--neon),transparent); box-shadow:0 0 14px var(--neon); top:0; }
+#sgrid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,204,0,0.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,204,0,0.09) 1px,transparent 1px); background-size:30px 30px; }
+
+/* GLITCH STRIPES */
+#gstripes { position:fixed; inset:0; pointer-events:none; z-index:400; opacity:0; }
+.gstr { position:absolute; left:0; right:0; background:var(--red); mix-blend-mode:screen; }
+
+/* SCAN RING */
+#sring { position:fixed; inset:0; pointer-events:none; z-index:300; display:flex; align-items:center; justify-content:center; opacity:0; }
+#sri {
+  width:min(180px,18vw); height:min(180px,18vw); border:4px solid var(--neon); border-radius:50%;
+  box-shadow:0 0 28px var(--neon),inset 0 0 28px rgba(255,204,0,0.08);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Space Mono',monospace; font-size:clamp(7px,0.9vw,11px); color:var(--neon);
+  letter-spacing:0.18em; animation:scanPulse 0.45s steps(2) infinite; position:relative;
+}
+#sri::after { content:''; position:absolute; top:-4px; left:-4px; right:-4px; bottom:-4px; border:2px solid rgba(255,204,0,0.25); border-radius:50%; animation:scanExp 0.9s ease-out infinite; }
+@keyframes scanPulse { 0%{opacity:1} 50%{opacity:0} }
+@keyframes scanExp { from{transform:scale(1);opacity:0.5} to{transform:scale(1.45);opacity:0} }
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="grain"></div>
+<div id="bg-text">MIRCH MASALA MIRCH MASALA MIRCH MASALA</div>
+
+<!-- Borders & corners -->
+<div class="bv l"></div><div class="bv r"></div>
+<div class="bh t"></div><div class="bh b"></div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="side-lbl l">AI-POWERED VERIFICATION SYSTEM v2.4 — MIRCH MASALA</div>
+<div class="side-lbl r">FIGHT MISINFORMATION — CHECK BEFORE YOU SHARE</div>
+
+<!-- Chaos labels -->
+<div class="chaos" id="lb1">FAKE?</div>
+<div class="chaos" id="lb2">TRUST?</div>
+<div class="chaos" id="lb3">SOURCE?</div>
+<div class="chaos" id="lb4">VIRAL</div>
+
+<!-- Drag block -->
+<div id="drag-block"><p>DISTORT<br>TRUTH</p><small>← DRAG ME</small></div>
+
+<!-- Edge panel -->
+<div id="epanel">
+  <button id="eclose">✕</button>
+  <h3>HOW THIS SCORE<br>IS BUILT</h3>
+  <p>Mirch Masala combines source reputation, corroboration clues, recency markers, and manipulative language patterns to estimate risk. This is a fast triage score, not a final fact-check verdict.</p>
+  <div class="etags">
+    <div class="etag">Source Quality</div><div class="etag">Cross-Claim Signals</div>
+    <div class="etag">Recency</div><div class="etag">Manipulation Cues</div>
+    <div class="etag">Human Verification</div>
+  </div>
+</div>
+
+<!-- Scan FX -->
+<div id="sov"><div id="sgrid"></div><div id="sline"></div></div>
+<div id="gstripes"></div>
+<div id="sring"><div id="sri">SCANNING...</div></div>
+
+<!-- POSTER -->
+<div id="poster">
+  <!-- Brand Strip -->
+  <div id="brand-strip">
+    <div id="brand-name">Mirch Masala 🌶️</div>
+    <div id="brand-tag">AI MISINFORMATION RISK SCANNER • PUBLIC BETA</div>
+    <div id="scan-badge">SCANS TODAY: <span id="sc">0</span></div>
+  </div>
+
+  <!-- Headline -->
+  <div id="hl-zone">
+    <div id="hl-sub">— AI-Powered Truth Verification —</div>
+    <div id="hl-main">
+      <span class="w1">TRUTH</span>
+      <span class="w2">OR</span>
+      <span class="w3">TADKA?</span>
+      <div class="gl r" aria-hidden="true">TRUTH<br>OR<br>TADKA?</div>
+      <div class="gl b" aria-hidden="true">TRUTH<br>OR<br>TADKA?</div>
+    </div>
+    <div id="intel-board">
+      <div id="intel-head">
+        <div id="intel-title">INTELLIGENCE BOARD</div>
+        <div id="intel-live">LIVE SIGNALS</div>
+      </div>
+      <div id="intel-metrics">
+        <div class="im"><div class="imn" id="im-risk">31%</div><div class="iml">Risk Level</div></div>
+        <div class="im"><div class="imn" id="im-confidence">68%</div><div class="iml">Model Confidence</div></div>
+        <div class="im"><div class="imn" id="im-corro">2/5</div><div class="iml">Corroboration</div></div>
+      </div>
+      <div id="intel-notes">
+        <div class="inote" id="note-1">No active scan. Paste a claim to generate evidence notes.</div>
+        <div class="inote" id="note-2">Use SCORE + SOURCE + CONTEXT before sharing.</div>
+        <div class="inote" id="note-3">High urgency language usually increases misinformation risk.</div>
+      </div>
+    </div>
+    <div id="verify-protocol">
+      <div id="vp-title">3-STEP VERIFICATION PROTOCOL</div>
+      <div id="vp-steps">
+        <div class="vps"><div class="vpsn">01</div><div class="vpst">Find the original source, not a forwarded repost.</div></div>
+        <div class="vps"><div class="vpsn">02</div><div class="vpst">Check date, location, and whether context is cropped.</div></div>
+        <div class="vps"><div class="vpsn">03</div><div class="vpst">Cross-check with at least two independent outlets.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Middle -->
+  <div id="mid">
+    <div id="meter-zone">
+      <div id="meter-lbl">— TRUTH METER —</div>
+      <div id="meter-wrap">
+        <svg id="msvg" viewBox="0 0 120 120">
+          <circle id="m-bg"   cx="60" cy="60" r="54"/>
+          <circle id="m-fill" cx="60" cy="60" r="54"/>
+        </svg>
+        <div id="m-pct">—</div>
+      </div>
+      <div id="m-verdict">AWAITING</div>
+      <div id="bars">
+        <div class="br"><div class="bl">CREDIBIL.</div><div class="bt"><div class="bf" id="bc"></div></div></div>
+        <div class="br"><div class="bl">SOURCE</div><div class="bt"><div class="bf" id="bs"></div></div></div>
+        <div class="br"><div class="bl">VIRAL</div><div class="bt"><div class="bf" id="bv" style="background:var(--orange)"></div></div></div>
+        <div class="br"><div class="bl">BIAS</div><div class="bt"><div class="bf" id="bb" style="background:var(--neon)"></div></div></div>
+      </div>
+    </div>
+
+    <div id="input-zone">
+      <div id="inp-hdr">— PASTE LINK —</div>
+      <textarea id="link-inp" placeholder="Paste suspicious link or headline here..."></textarea>
+      <button id="spice-btn"><span>🌶️ SPICE CHECK</span></button>
+      <div id="scan-status">READY TO DETECT MASALA</div>
+      <div id="trust-box">
+        <div id="trust-h">WHAT MAKES A CLAIM CREDIBLE?</div>
+        <div id="trust-p">Reliable claims usually cite a primary source, include time and place context, and match reports from multiple independent outlets.</div>
+        <div id="trust-tags">
+          <div class="tt">Primary Source</div>
+          <div class="tt">Named Author</div>
+          <div class="tt">Date Context</div>
+          <div class="tt">Cross-Verification</div>
+        </div>
+        <div id="trust-note">Use this score to decide what to investigate next before sharing.</div>
+      </div>
+      <div id="source-heat">
+        <div id="sh-title">SOURCE HEATMAP SNAPSHOT</div>
+        <svg id="sh-svg" viewBox="0 0 300 56" aria-hidden="true">
+          <rect x="0" y="0" width="300" height="56" fill="#fff7ea"/>
+          <line x1="0" y1="46" x2="300" y2="46" stroke="#ccb89b" stroke-width="1"/>
+          <rect id="sh1" x="16" y="24" width="52" height="22" fill="#d22f27"/>
+          <rect id="sh2" x="86" y="18" width="52" height="28" fill="#ff7a22"/>
+          <rect id="sh3" x="156" y="12" width="52" height="34" fill="#ffc62e"/>
+          <rect id="sh4" x="226" y="8" width="52" height="38" fill="#27a763"/>
+          <text x="16" y="54" font-size="6" fill="#7a6651" font-family="Space Mono">UNVERIFIED</text>
+          <text x="234" y="54" font-size="6" fill="#7a6651" font-family="Space Mono">RELIABLE</text>
+        </svg>
+        <div class="sh-cap">Red indicates weak-source concentration; green indicates stronger corroborated sourcing.</div>
+      </div>
+      <div id="mini-gallery">
+        <div class="gcard">
+          <svg class="gsvg" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="2" y="5" width="28" height="22" rx="2" fill="#ffe5de" stroke="#d22f27" stroke-width="2"/>
+            <circle cx="12" cy="14" r="3" fill="#ff7a22"/>
+            <path d="M6 23l6-5 4 3 4-4 6 6" fill="none" stroke="#d22f27" stroke-width="2"/>
+          </svg>
+          <div class="gttl">Visual Check</div>
+          <div class="gdesc">Inspect edits, inconsistent shadows, cropped context, or recycled media.</div>
+        </div>
+        <div class="gcard">
+          <svg class="gsvg" viewBox="0 0 32 32" aria-hidden="true">
+            <circle cx="16" cy="16" r="12" fill="#fff2cc" stroke="#d79b00" stroke-width="2"/>
+            <path d="M16 8v9l6 3" fill="none" stroke="#d79b00" stroke-width="2"/>
+          </svg>
+          <div class="gttl">Timeline Check</div>
+          <div class="gdesc">Confirm publish date and whether old events are being reposted as current.</div>
+        </div>
+        <div class="gcard">
+          <svg class="gsvg" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M6 7h20v18H6z" fill="#e8f7ee" stroke="#27a763" stroke-width="2"/>
+            <path d="M9 12h14M9 16h10M9 20h12" stroke="#27a763" stroke-width="2"/>
+          </svg>
+          <div class="gttl">Source Trail</div>
+          <div class="gdesc">Trace back to named author, primary evidence, and independent reporting.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom row -->
+  <div id="btm">
+    <div id="mq-wrap">
+      <div id="mq">
+        <span class="mi">CHECK ORIGINAL LINK, NOT SCREENSHOTS <span class="ms">✦</span></span>
+        <span class="mi">LOOK FOR DATE + LOCATION CONTEXT <span class="ms">✦</span></span>
+        <span class="mi">COMPARE WITH 2 INDEPENDENT OUTLETS <span class="ms">✦</span></span>
+        <span class="mi">WATCH FOR URGENCY TRIGGERS: "SHARE NOW" <span class="ms">🌶️</span></span>
+        <span class="mi">SHORT LINKS CAN HIDE SOURCE QUALITY <span class="ms">✦</span></span>
+        <span class="mi">TRIAGE SCORE HELPS, HUMAN FACT-CHECK CONFIRMS <span class="ms">✦</span></span>
+        <span class="mi">CHECK ORIGINAL LINK, NOT SCREENSHOTS <span class="ms">✦</span></span>
+        <span class="mi">LOOK FOR DATE + LOCATION CONTEXT <span class="ms">✦</span></span>
+        <span class="mi">COMPARE WITH 2 INDEPENDENT OUTLETS <span class="ms">✦</span></span>
+        <span class="mi">WATCH FOR URGENCY TRIGGERS: "SHARE NOW" <span class="ms">🌶️</span></span>
+        <span class="mi">SHORT LINKS CAN HIDE SOURCE QUALITY <span class="ms">✦</span></span>
+        <span class="mi">TRIAGE SCORE HELPS, HUMAN FACT-CHECK CONFIRMS <span class="ms">✦</span></span>
+      </div>
+    </div>
+    <div id="edge-btn">? EDGE CASE</div>
+  </div>
+
+  <!-- Stats -->
+  <div id="stats">
+    <div class="si"><div class="sn red" id="sf">84,203</div><div class="sl">Fake Links Caught</div></div>
+    <div class="sd"></div>
+    <div class="si"><div class="sn or" id="sv">12,891</div><div class="sl">Verified Today</div></div>
+    <div class="sd"></div>
+    <div class="si"><div class="sn">97.3%</div><div class="sl">Accuracy Rate</div></div>
+    <div class="sd"></div>
+    <div class="si"><div class="sn or">2.4s</div><div class="sl">Avg Scan Time</div></div>
+  </div>
+</div>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+});
+
+// ── CHAOS LABELS PARALLAX ──
+const labels = [
+  { el: document.getElementById('lb1'), mx:-0.024, my:-0.018 },
+  { el: document.getElementById('lb2'), mx: 0.028, my: 0.013 },
+  { el: document.getElementById('lb3'), mx:-0.018, my: 0.028 },
+  { el: document.getElementById('lb4'), mx: 0.038, my:-0.025 },
+];
+document.addEventListener('mousemove', e => {
+  const cx = e.clientX - window.innerWidth/2;
+  const cy = e.clientY - window.innerHeight/2;
+  labels.forEach(l => gsap.to(l.el, { x: cx*l.mx, y: cy*l.my, duration:0.75, ease:'power2.out' }));
+});
+labels.forEach(l => {
+  l.el.addEventListener('mouseenter', () => gsap.to(l.el, { scale:1.12, rotation:gsap.utils.random(-7,7), duration:0.12, ease:'back.out(3)' }));
+  l.el.addEventListener('mouseleave', () => gsap.to(l.el, { scale:1, rotation:0, duration:0.3, ease:'elastic.out(1,0.5)' }));
+});
+
+// ── HEADLINE GLITCH ──
+const glR = document.querySelector('.gl.r');
+const glB = document.querySelector('.gl.b');
+const hlMain = document.getElementById('hl-main');
+function headlineGlitch() {
+  gsap.timeline()
+    .to([glR,glB], { opacity:1, duration:0 })
+    .to(glR, { x:gsap.utils.random(-11,11), y:gsap.utils.random(-3,3), duration:0.045 })
+    .to(glB, { x:gsap.utils.random(-11,11), y:gsap.utils.random(-3,3), duration:0.045 }, '<')
+    .to(hlMain, { skewX:gsap.utils.random(-3,3), duration:0.045 }, '<')
+    .to([glR,glB], { opacity:0, x:0, y:0, duration:0.045 })
+    .to(hlMain, { skewX:0, duration:0.045 });
+}
+setInterval(() => { if(Math.random()<0.35) headlineGlitch(); }, 2100);
+hlMain.addEventListener('mouseenter', () => { headlineGlitch(); setTimeout(headlineGlitch, 100); });
+
+// ── BUILD GLITCH STRIPES ──
+const gs = document.getElementById('gstripes');
+for(let i=0;i<14;i++){
+  const s=document.createElement('div'); s.className='gstr';
+  s.style.top=Math.random()*100+'%'; s.style.opacity=Math.random()*0.5+0.2;
+  s.style.height=Math.random()*5+1+'px'; gs.appendChild(s);
+}
+
+// ── AUDIO ──
+function playTick() {
+  try {
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const buf=ctx.createBuffer(1,ctx.sampleRate*0.035,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+    const src=ctx.createBufferSource(); src.buffer=buf;
+    const g=ctx.createGain(); g.gain.value=0.28;
+    src.connect(g); g.connect(ctx.destination); src.start();
+  }catch(e){}
+}
+function playScan() {
+  try {
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(); const g=ctx.createGain();
+    osc.type='sawtooth';
+    osc.frequency.setValueAtTime(70,ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1100,ctx.currentTime+0.28);
+    osc.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.75);
+    g.gain.setValueAtTime(0.12,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.75);
+    osc.connect(g); g.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime+0.75);
+  }catch(e){}
+}
+
+// ── SPICE CHECK ──
+let scanCount=0;
+const mFill=document.getElementById('m-fill');
+const mPct=document.getElementById('m-pct');
+const mVerdict=document.getElementById('m-verdict');
+const sov=document.getElementById('sov');
+const sline=document.getElementById('sline');
+const sring=document.getElementById('sring');
+const scEl=document.getElementById('sc');
+const scanStatus=document.getElementById('scan-status');
+const inputEl=document.getElementById('link-inp');
+const riskEl=document.getElementById('im-risk');
+const confEl=document.getElementById('im-confidence');
+const corroEl=document.getElementById('im-corro');
+const note1=document.getElementById('note-1');
+const note2=document.getElementById('note-2');
+const note3=document.getElementById('note-3');
+const sh1=document.getElementById('sh1');
+const sh2=document.getElementById('sh2');
+const sh3=document.getElementById('sh3');
+const sh4=document.getElementById('sh4');
+const C=339.29;
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+function analyzeInput(raw) {
+  const txt = raw.trim();
+  const t = txt.toLowerCase();
+
+  let risk = 50;
+  let credibility = 50;
+  let source = 50;
+  let virality = 45;
+  let bias = 40;
+
+  const urgentPhrases = ['breaking', 'shocking', 'must watch', 'share now', 'urgent', 'exposed', 'they dont want you to know'];
+  const weakDomains = ['bit.ly', 'tinyurl', 'goo.gl', 't.co'];
+  const strongDomains = ['reuters.com', 'apnews.com', 'bbc.com', 'who.int', 'un.org', '.gov'];
+  const reasons = [];
+
+  if (!txt) {
+    return { risk: 0, credibility: 0, source: 0, virality: 0, bias: 0, confidence: 0, corroboration: 0, reasons: ['No input provided'] };
+  }
+
+  if (txt.length < 28) {
+    risk += 8;
+    source -= 8;
+    reasons.push('Very short claim gives limited verifiable context');
+  }
+
+  if ((txt.match(/!/g) || []).length >= 2 || /\b[A-Z]{4,}\b/.test(txt)) {
+    risk += 12;
+    bias += 10;
+    reasons.push('Sensational punctuation or all-caps emphasis detected');
+  }
+
+  urgentPhrases.forEach(p => {
+    if (t.includes(p)) {
+      risk += 6;
+      virality += 7;
+      bias += 5;
+      reasons.push('Urgency phrase increases virality pressure: ' + p.toUpperCase());
+    }
+  });
+
+  weakDomains.forEach(d => {
+    if (t.includes(d)) {
+      risk += 12;
+      source -= 14;
+      reasons.push('Short-link domain found; original source not visible');
+    }
+  });
+
+  strongDomains.forEach(d => {
+    if (t.includes(d)) {
+      risk -= 12;
+      source += 15;
+      credibility += 13;
+      reasons.push('Established domain pattern improves source confidence');
+    }
+  });
+
+  if (/according to|reported by|source:|study|official/.test(t)) {
+    risk -= 8;
+    credibility += 9;
+    source += 8;
+    reasons.push('Attribution language suggests traceable reporting');
+  }
+
+  if (/\b\d{4}\b|\bjan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec\b/.test(t)) {
+    credibility += 5;
+    reasons.push('Date/time signals found, improving contextual reliability');
+  }
+
+  if (/miracle|guaranteed|100%|secret cure|exclusive leak/.test(t)) {
+    risk += 14;
+    bias += 10;
+    credibility -= 12;
+    reasons.push('Manipulative certainty wording detected');
+  }
+
+  credibility = clamp(100 - risk + (credibility - 50), 3, 98);
+  source = clamp(source, 2, 98);
+  virality = clamp(virality + Math.floor(risk * 0.2), 3, 99);
+  bias = clamp(bias, 2, 97);
+  risk = clamp(Math.round((risk + (100 - source) * 0.3 + bias * 0.2) / 1.5), 4, 96);
+  const corroboration = clamp(Math.round((credibility + source) / 40), 1, 5);
+  const confidence = clamp(Math.round((Math.abs(50 - risk) * 1.2) + corroboration * 8), 25, 94);
+
+  return { risk, credibility, source, virality, bias, confidence, corroboration, reasons };
+}
+
+document.getElementById('spice-btn').addEventListener('click', () => {
+  const parsed = analyzeInput(inputEl.value);
+  if (!inputEl.value.trim()) {
+    scanStatus.textContent = 'PASTE A LINK OR CLAIM TO START ANALYSIS';
+    headlineGlitch();
+    return;
+  }
+
+  playTick(); playScan();
+  cursor.classList.add('scanning');
+  scEl.textContent = ++scanCount;
+  riskEl.textContent = parsed.risk + '%';
+  confEl.textContent = parsed.confidence + '%';
+  corroEl.textContent = parsed.corroboration + '/5';
+  note1.textContent = parsed.reasons[0] || 'No major signals found in this claim.';
+  note2.textContent = parsed.reasons[1] || 'Cross-check this claim with two independent outlets.';
+  note3.textContent = parsed.reasons[2] || 'Use caution if source chain is incomplete.';
+
+  // Button shake
+  gsap.timeline()
+    .to('#spice-btn',{x:-5,duration:0.04}).to('#spice-btn',{x:5,duration:0.04})
+    .to('#spice-btn',{x:-3,duration:0.04}).to('#spice-btn',{x:3,duration:0.04})
+    .to('#spice-btn',{x:0,duration:0.04});
+
+  // Multi-glitch burst
+  [0,110,220,330].forEach(d => setTimeout(headlineGlitch, d));
+
+  // Scan line sweep
+  gsap.to(sov, {opacity:1,duration:0.08});
+  gsap.to(sline, {top:'100%',duration:1.1,ease:'none',onComplete:()=>gsap.set(sline,{top:0})});
+
+  // Scan ring appear
+  gsap.to(sring,{opacity:1,duration:0.08});
+  gsap.fromTo('#sri',{scale:0.4,opacity:0},{scale:1,opacity:1,duration:0.28,ease:'back.out(2)'});
+
+  // Glitch stripes burst
+  gsap.to(gs,{opacity:1,duration:0.04});
+  gsap.to('.gstr',{x:()=>gsap.utils.random(-18,18),duration:0.07,stagger:0.008,repeat:5,yoyo:true,
+    onComplete:()=>gsap.to(gs,{opacity:0,duration:0.08})});
+
+  // Status ticker
+  const msgs=['PARSING CLAIM...','CHECKING SOURCE SIGNALS...','ESTIMATING VIRAL MANIPULATION...','CROSS-CHECKING CONTEXT CUES...','SCORING MISINFORMATION RISK...'];
+  let mi=0;
+  const mt=setInterval(()=>{ if(mi<msgs.length) scanStatus.textContent=msgs[mi++]; else clearInterval(mt); },230);
+
+  // Meter animation
+  const target=parsed.risk;
+  const isFake=target>55, isReal=target<35;
+  let cur=0;
+  setTimeout(()=>{
+    const iv=setInterval(()=>{
+      cur+=Math.floor(Math.random()*11)+3;
+      if(cur>=target){ cur=target; clearInterval(iv); finalize(target,isFake,isReal); }
+      mPct.textContent=cur+'%';
+      mFill.style.strokeDashoffset=C-(cur/100)*C;
+      mFill.style.stroke=cur>60?'var(--red)':cur<35?'var(--safe)':'var(--orange)';
+    },75);
+  },380);
+
+  gsap.to('#bc',{width:parsed.credibility+'%',duration:0.5,ease:'power2.out'});
+  gsap.to('#bs',{width:parsed.source +'%',duration:0.5,delay:0.08,ease:'power2.out'});
+  gsap.to('#bv',{width:parsed.virality +'%',duration:0.5,delay:0.16,ease:'power2.out'});
+  gsap.to('#bb',{width:parsed.bias+'%',duration:0.5,delay:0.24,ease:'power2.out'});
+
+  const weak = clamp(Math.round(parsed.risk * 0.55), 10, 54);
+  const mixed = clamp(Math.round((parsed.virality + parsed.bias) * 0.35), 10, 54);
+  const fair = clamp(Math.round((parsed.credibility + 20) * 0.4), 10, 54);
+  const strong = clamp(Math.round((parsed.source + parsed.credibility) * 0.26), 10, 54);
+  gsap.to(sh1,{attr:{height:weak, y:46-weak},duration:0.45,ease:'power2.out'});
+  gsap.to(sh2,{attr:{height:mixed, y:46-mixed},duration:0.45,delay:0.06,ease:'power2.out'});
+  gsap.to(sh3,{attr:{height:fair, y:46-fair},duration:0.45,delay:0.12,ease:'power2.out'});
+  gsap.to(sh4,{attr:{height:strong, y:46-strong},duration:0.45,delay:0.18,ease:'power2.out'});
+});
+
+function finalize(val, isFake, isReal) {
+  cursor.classList.remove('scanning');
+  gsap.to([sov,sring],{opacity:0,duration:0.25});
+  mVerdict.className='';
+  if(isFake){
+    mVerdict.textContent='🔴 HIGH RISK';
+    scanStatus.textContent='MULTIPLE MISINFORMATION SIGNALS FOUND';
+  } else if(isReal){
+    mVerdict.textContent='✅ LOW RISK';
+    mVerdict.className='real';
+    scanStatus.textContent='STRONGER CREDIBILITY SIGNALS DETECTED';
+  } else {
+    mVerdict.textContent='⚠️ NEEDS REVIEW';
+    mVerdict.className='mixed';
+    scanStatus.textContent='MIXED SIGNALS — VERIFY BEFORE SHARING';
+  }
+  gsap.fromTo('#m-verdict',{scale:1.35,skewX:-4},{scale:1,skewX:0,duration:0.35,ease:'back.out(2)'});
+
+  if(isFake){
+    const sfEl=document.getElementById('sf');
+    const cur=parseInt(sfEl.textContent.replace(',',''));
+    gsap.to({v:cur},{v:cur+1,duration:0.4,onUpdate:function(){sfEl.textContent=Math.round(this.targets()[0].v).toLocaleString();}});
+  }
+}
+
+// ── DRAGGABLE ──
+Draggable.create('#drag-block',{
+  type:'x,y',
+  onDrag: function(){ headlineGlitch(); gsap.to('#drag-block',{rotation:this.x*0.04,duration:0.08}); },
+  onDragEnd: function(){ gsap.to('#drag-block',{rotation:-3,duration:0.5,ease:'elastic.out(1,0.5)'}); }
+});
+
+// ── EDGE PANEL ──
+const epanel=document.getElementById('epanel');
+document.getElementById('edge-btn').addEventListener('click',()=>{
+  playTick(); headlineGlitch();
+  epanel.style.pointerEvents='all';
+  gsap.fromTo(epanel,{scaleY:0,opacity:0,transformOrigin:'bottom right'},{scaleY:1,opacity:1,duration:0.32,ease:'back.out(1.4)'});
+});
+document.getElementById('eclose').addEventListener('click',e=>{
+  e.stopPropagation(); playTick();
+  gsap.to(epanel,{scaleY:0,opacity:0,duration:0.18,ease:'power2.in',onComplete:()=>epanel.style.pointerEvents='none'});
+});
+
+// ── MAGNETIC ──
+[document.getElementById('spice-btn'),document.getElementById('edge-btn')].forEach(b=>{
+  b.addEventListener('mousemove',e=>{
+    const r=b.getBoundingClientRect();
+    gsap.to(b,{x:(e.clientX-r.left-r.width/2)*0.22,y:(e.clientY-r.top-r.height/2)*0.22,duration:0.22,ease:'power2.out'});
+  });
+  b.addEventListener('mouseleave',()=>gsap.to(b,{x:0,y:0,duration:0.45,ease:'elastic.out(1,0.4)'}));
+});
+
+// ── BRAND HOVER ──
+const bn=document.getElementById('brand-name');
+bn.addEventListener('mouseenter',()=>{ gsap.to(bn,{skewX:-5,scale:1.05,duration:0.12,ease:'power3.out'}); headlineGlitch(); });
+bn.addEventListener('mouseleave',()=>gsap.to(bn,{skewX:0,scale:1,duration:0.28,ease:'elastic.out(1,0.5)'}));
+
+// ── RANDOM STAT FLICKER ──
+setInterval(()=>{
+  if(Math.random()<0.28){
+    const el=document.getElementById('sv');
+    const v=12891+Math.floor(Math.random()*30-15);
+    el.textContent=v.toLocaleString(); setTimeout(()=>el.textContent='12,891',75);
+  }
+},3200);
+
+// ── RANDOM LABEL JITTER ──
+setInterval(()=>{
+  const l=labels[Math.floor(Math.random()*labels.length)].el;
+  gsap.to(l,{rotation:gsap.utils.random(-7,7),scale:gsap.utils.random(0.95,1.08),duration:0.09,yoyo:true,repeat:3,
+    onComplete:()=>gsap.to(l,{rotation:0,scale:1,duration:0.28,ease:'elastic.out(1,0.5)'})});
+},2600);
+
+// ── ENTRY ANIMATION ──
+gsap.timeline()
+  .from('#brand-strip',{y:-28,opacity:0,duration:0.38,ease:'power3.out'})
+  .from('.w1',{x:-55,opacity:0,duration:0.38,ease:'back.out(2)'},'-=0.1')
+  .from('.w2',{x:-38,opacity:0,duration:0.3,ease:'back.out(2)'},'-=0.22')
+  .from('.w3',{x:-72,opacity:0,duration:0.38,ease:'back.out(2)'},'-=0.22')
+  .from('#meter-zone',{x:-26,opacity:0,duration:0.32},'-=0.1')
+  .from('#input-zone',{x:26,opacity:0,duration:0.32},'<')
+  .from('#btm',{y:18,opacity:0,duration:0.28},'-=0.1')
+  .from('#stats',{y:12,opacity:0,duration:0.28},'-=0.1')
+  .from('.chaos',{scale:0,opacity:0,stagger:0.07,duration:0.28,ease:'back.out(3)'},'-=0.18')
+  .from('#drag-block',{scale:0,rotation:18,duration:0.38,ease:'back.out(2)'},'-=0.12');
+</script>
+</body>
+</html>
